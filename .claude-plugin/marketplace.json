@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "pro-skills",
+  "description": "Wrapper skills that compose existing skill families into complete, gated engineering pipelines.",
+  "owner": {
+    "name": "kowshikdev",
+    "url": "https://github.com/kowshikdev"
+  },
+  "plugins": [
+    {
+      "name": "proship",
+      "description": "Plan to deployment in six gated phases. Routes each task to the right caveman or ponytail skill and refuses to release while superseded code is still alive.",
+      "source": "./",
+      "category": "workflow"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "proship",
+  "version": "1.0.0",
+  "description": "End-to-end project pipeline. Wraps the caveman and ponytail skill families into six gated phases from planning to deployment, and enforces a replacement ledger so no stale code survives a release.",
+  "author": {
+    "name": "kowshikdev",
+    "url": "https://github.com/kowshikdev"
+  },
+  "homepage": "https://github.com/kowshikdev/pro-skills",
+  "repository": "https://github.com/kowshikdev/pro-skills",
+  "license": "MIT",
+  "keywords": [
+    "pipeline",
+    "planning",
+    "deployment",
+    "dead-code",
+    "yagni",
+    "orchestration"
+  ],
+  "skills": "./skills/",
+  "commands": "./commands/"
+}
