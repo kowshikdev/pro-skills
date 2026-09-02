@@ -60,15 +60,36 @@ Or just describe the work — the skill triggers on "build this end to end",
 | # | Phase | Produces | Gate to pass |
 |---|-------|----------|--------------|
 | 0 | FRAME | Acceptance conditions, explicit non-goals | Every acceptance line is observable and falsifiable |
-| 1 | MAP | Prior art, reuse seams, constraints | Every capability marked reuse / extend / build, with `path:line` for the first two |
+| 1 | MAP | Prior art, reuse seams, bloat baseline | Every capability marked reuse / extend / build with `path:line`; `ponytail-audit` baseline recorded |
 | 2 | SLICE | Ordered thin vertical slices | Slice 1 is end-to-end runnable; each slice has its own acceptance subset |
 | 3 | BUILD | Working slices + ledger rows | Slice acceptance passes; every superseding change has a ledger row |
-| 4 | PROVE | Proof set, two reviews, prune sweep | Proof green, both reviews clear, no ledger row past due |
+| 4 | PROVE | Proof set, two reviews, bloat delta, prune sweep | Proof green, both reviews clear, bloat delta at or below baseline, no ledger row past due |
 | 5 | RELEASE | Reversible rollout | Rollback exercised, ledger fully closed, observability live |
 
 Phases 0–2 shrink the build before it starts. That is where most of the
 efficiency comes from — the cheapest code remains the code the MAP phase
 found already written.
+
+## Less code, measured
+
+`ponytail` is the pipeline's authority on volume, and it is enforced with a
+number rather than a preference. `ponytail-audit` ends every run with:
+
+```
+net: -<N> lines, -<M> deps possible.
+```
+
+MAP records that as a baseline in `.ship/audit-baseline.md`. Gate 4 re-runs the
+audit and **fails if `N` or `M` went up** — a build that leaves more cuttable
+code than it found has added bloat, whatever its diff looks like and however
+cleanly it passes its tests. Findings are read by tag, each with its own
+remedy: `delete:` `stdlib:` `native:` `yagni:` `shrink:`.
+
+The audit reports and applies nothing, so the pipeline supplies what it lacks:
+at MAP its findings inside the blast radius become pre-work, at gate 4 a rise
+in `N` is fixed before the gate opens, and in `ship-prune` its tags drive the
+sweep. Inherited bloat outside the code the build touched stays out of scope —
+this measures what the build added, not what it walked into.
 
 ## No stale code
 
@@ -127,7 +148,7 @@ gate behavior.
 | Bounded 1–2 file edit | `cavecrew-builder` |
 | Correctness review | `caveman-review`, `cavecrew-reviewer` |
 | Over-engineering review | `ponytail-review` |
-| Repo-wide bloat hunt | `ponytail-audit` |
+| Repo-wide bloat hunt + delta gate | `ponytail-audit` |
 | Deferred shortcuts owed | `ponytail-debt` |
 | Commit message | `caveman-commit` |
 

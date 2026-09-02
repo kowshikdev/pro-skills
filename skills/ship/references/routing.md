@@ -27,7 +27,7 @@ Sources:
 | `caveman-explore` | caveman | Read-only cold-start orientation, returns `path:line` only. Skip when the file is already named | `Glob` + `Grep` directly, reporting `path:line` and nothing else |
 | `cavecrew-investigator` | caveman (agent) | Read-only locator: where is X, what calls Y, map this directory | `Explore` agent, or inline `Grep` with `-n` |
 | `cavecrew` | caveman | Decides when delegating beats working inline | Delegate when the read is broad or exploratory; inline when the target is named |
-| `ponytail-audit` | ponytail | Repo-wide ranked bloat report. Establishes the baseline you must not worsen | Grep for duplicate helpers, unused exports and wrapper-only modules |
+| `ponytail-audit` | ponytail | Repo-wide ranked bloat report, tagged `delete:` `stdlib:` `native:` `yagni:` `shrink:`, ending in `net: -<N> lines, -<M> deps possible.` Record that number — it is the phase 4 gate metric | Grep for duplicate helpers, unused exports, single-caller layers and wrapper-only modules; count them for a crude baseline |
 | `ponytail-debt` | ponytail | Harvests `ponytail:` markers into a debt ledger | `grep -rn "ponytail:\|TODO\|FIXME\|HACK"` and tabulate |
 
 ## Phase 2 — SLICE
@@ -56,7 +56,8 @@ Route by change shape. These are mutually exclusive per change — pick one.
 | `verify-and-stop` | caveman | Smallest sufficient proof set; distinguishes pass / fail / unavailable / blocked | Run focused checks before wide gates, quote commands and results, add nothing after criteria pass |
 | `caveman-review` | caveman | Correctness review, one line per finding with location, problem, fix | Review the diff for correctness only, one line per finding |
 | `cavecrew-reviewer` | caveman (agent) | Same, delegated and severity-tagged | Use the `code-review` skill if present |
-| `ponytail-review` | ponytail | Over-engineering review: reinvented stdlib, unneeded deps, speculative abstraction, dead flexibility | Ask of each added symbol: what breaks if this is deleted? No answer means delete it |
+| `ponytail-review` | ponytail | Over-engineering review of the diff, same five tags as the audit | Ask of each added symbol: what breaks if this is deleted? No answer means delete it |
+| `ponytail-audit` | ponytail | Re-run for the **bloat delta**: `N` and `M` must not exceed the phase 1 baseline. A build leaving more cuttable code than it found added bloat, whatever the tests say | Re-count the phase 1 proxy and compare |
 
 ## Phase 5 — RELEASE
 

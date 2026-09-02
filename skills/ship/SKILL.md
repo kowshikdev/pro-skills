@@ -28,7 +28,9 @@ the next one starts.
 
 - **ponytail** governs *how much* gets built. Every phase inherits its ladder:
   does this need to exist → already in repo → in stdlib → native platform →
-  installed dependency → one line → minimum that works.
+  installed dependency → one line → minimum that works. It is measured, not
+  just believed: `ponytail-audit` sets a baseline at MAP and gate 4 fails if
+  the build leaves more cuttable code than it found.
 - **caveman** governs *how work is executed and reported*: workflow discipline
   per change type, compressed output, delegated reads.
 
@@ -39,10 +41,10 @@ Both stay on for the whole pipeline. They are the ambient rules, not steps.
 | # | Phase | Produces | Gate to pass |
 |---|-------|----------|--------------|
 | 0 | FRAME | Acceptance conditions, explicit non-goals | Every acceptance line is observable and falsifiable |
-| 1 | MAP | Prior art, reuse seams, constraints | Every planned capability marked reuse / extend / build, with `path:line` for the first two |
+| 1 | MAP | Prior art, reuse seams, bloat baseline | Every capability marked reuse / extend / build with `path:line`; `ponytail-audit` baseline recorded |
 | 2 | SLICE | Ordered thin vertical slices | Slice 1 is end-to-end runnable and each slice has its own acceptance subset |
 | 3 | BUILD | Working slices + ledger rows | Slice acceptance passes; every superseding change has a ledger row |
-| 4 | PROVE | Proof set, two reviews, prune sweep | Focused proof green, both reviews clear, ledger has no OPEN row due by PROVE |
+| 4 | PROVE | Proof set, two reviews, bloat delta, prune sweep | Proof green, both reviews clear, bloat delta at or below baseline, no OPEN row due by PROVE |
 | 5 | RELEASE | Reversible rollout | Rollback path exercised, ledger fully closed, observability live |
 
 **Status** (`/ship status`) is not a separate skill — read `.ship/ledger.md`
@@ -76,7 +78,7 @@ all 26 wrapped skills is in `references/routing.md`.
 | Bounded 1-2 file edit | `cavecrew-builder` agent |
 | Correctness review of a diff | `caveman-review` / `cavecrew-reviewer` agent |
 | Over-engineering review of a diff | `ponytail-review` |
-| Repo-wide bloat hunt | `ponytail-audit` |
+| Repo-wide bloat hunt, and the phase 4 delta gate | `ponytail-audit` |
 | Deferred shortcuts owed | `ponytail-debt` |
 | Commit message | `caveman-commit` |
 

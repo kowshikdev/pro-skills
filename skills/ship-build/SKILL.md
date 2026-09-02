@@ -33,14 +33,60 @@ never shares a change with a feature — split it.
 
 ## The ladder, on every added symbol
 
-`ponytail` is on. Before writing anything, walk it: does this need to exist →
-already in the repo (the MAP phase answered this — use it) → in the stdlib →
-a native platform feature → an installed dependency → one line → the minimum
-that works.
+`ponytail` is the authority on how much gets written. Stop at the first rung
+that holds:
+
+1. Does this need to exist at all?
+2. Already in this codebase? — MAP answered this. Use its `path:line`.
+3. Stdlib does it?
+4. Native platform feature covers it?
+5. Already-installed dependency solves it?
+6. Can it be one line?
+7. Only then: the minimum code that works.
+
+**The ladder shortens the solution, never the reading.** It runs *after* you
+understand the change — trace every file it touches and the real flow first.
+A minimal diff in the wrong place is not lazy, it is a second bug wearing
+efficiency as a costume. This is why `investigate-first` outranks the ladder
+whenever the cause is unknown.
+
+For a bug fix, that means the root cause, not the symptom: grep every caller of
+the function before editing. One guard in the shared function is a smaller diff
+than a guard in each caller, *and* it fixes the siblings the ticket did not
+name.
 
 A new dependency needs a stated tradeoff, not a preference. Adding config,
 providers, modes, or extensibility that no acceptance line requires is the
 default failure mode of this phase.
+
+Intensity is the user's call — `lite` names the lazier alternative and lets
+them pick, `full` enforces the ladder, `ultra` challenges the requirement
+itself. Default `full`. Never simplify away input validation at trust
+boundaries, error handling that prevents data loss, security, accessibility, or
+anything explicitly requested.
+
+## Deliberate shortcuts get marked, not forgotten
+
+A simplification that cuts a real corner with a known ceiling — a global lock,
+an O(n²) scan, a naive heuristic — carries a `ponytail:` comment naming both
+the ceiling and the upgrade path:
+
+```python
+# ponytail: global lock, per-account locks if throughput matters
+```
+
+`ponytail-debt` harvests these later, which only works if they were written.
+Note the division of labour: `.ship/ledger.md` tracks what a change **replaced**
+and must be deleted; a `ponytail:` marker tracks what a change **deferred** and
+may be upgraded. Different questions, different lifecycles — do not merge them.
+
+## Lazy code without its check is unfinished
+
+Non-trivial logic — a branch, a loop, a parser, a money or security path —
+leaves exactly one runnable check behind: the smallest thing that fails if the
+logic breaks. An assert-based self-check or one small test. No frameworks, no
+fixtures, no per-function suites unless asked. Trivial one-liners need none;
+YAGNI applies to tests too.
 
 ## Delegate what is bounded
 

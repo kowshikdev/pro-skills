@@ -59,16 +59,40 @@ remaining callers, feature flags permanently on.
 Each one is a contract step **owed**. Either execute it now with authorization,
 or record it in the ledger with a date. Not both silent.
 
+### Where `ponytail-audit` fits
+
+Run it here if phase 4 has not already. Its five tags map onto this sweep:
+`delete:` → check 1, `stdlib:` and `native:` → check 5, `yagni:` → check 2,
+`shrink:` → line-level and out of scope for pruning.
+
+It hunts what greps miss: single-implementation interfaces, factories with one
+product, wrappers that only delegate, files exporting one thing, dead flags and
+config. It reports and applies nothing, so its output is the worklist for this
+skill, not a substitute for it.
+
+Its scope is over-engineering only — correctness, security and performance are
+explicitly out of scope and route to `caveman-review`.
+
 ## 4. Rotted markers
 
 ```
 grep -rn "ponytail:\|TODO\|FIXME\|HACK\|XXX\|@deprecated" --include="*.<ext>" .
 ```
 
-Run `ponytail-debt` if installed — it harvests `ponytail:` markers into a
-proper ledger. Every marker in code this pipeline touched gets resolved: done,
-scheduled with an owner, or deleted along with the assumption behind it. A
-marker nobody will act on is a comment pretending to be a plan.
+Run `ponytail-debt` if installed — it harvests `ponytail:` markers into a debt
+ledger. A well-formed marker names a ceiling and an upgrade path
+(`# ponytail: global lock, per-account locks if throughput matters`), so
+resolving it means checking whether the ceiling has been reached, not guessing
+what past-you meant.
+
+Every marker in code this pipeline touched gets resolved: done, scheduled with
+an owner, or deleted along with the assumption behind it. A marker nobody will
+act on is a comment pretending to be a plan.
+
+Two ledgers, kept separate: `.ship/ledger.md` is **replacement** — what must be
+deleted, gate-enforced. `ponytail-debt` is **deferral** — what may be upgraded,
+reviewed not enforced. A deferred shortcut is a legitimate shipping state; a
+surviving replacement is not.
 
 ## 5. Zombie dependencies
 

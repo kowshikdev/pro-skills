@@ -37,10 +37,19 @@ build, so it is the phase people skip and should not.
 - Orient with `caveman-explore` or `cavecrew-investigator` — delegated reads,
   `path:line` back, main context untouched. If the exact file is already known,
   read it directly; delegation is not free.
-- Run `ponytail-audit` for a repo-wide bloat baseline. You are inheriting this
-  codebase's debt; know it before adding to it. The build must not worsen it.
-- Run `ponytail-debt` for shortcuts already owed. A deferred marker in the code
-  you are about to touch is cheaper to settle now than to route around.
+- Run `ponytail-audit` and **record its baseline**. It ends with a measurable
+  line — `net: -<N> lines, -<M> deps possible.` — and that number is the gate
+  metric phase 4 compares against. Save it plus the findings to
+  `.ship/audit-baseline.md`. Without it there is nothing to compare to later,
+  and "we didn't make it worse" stays an opinion.
+- Findings that land **in the code this build will touch** are pre-work, not
+  backlog. Settling a `stdlib:` or `yagni:` finding in a file you are about to
+  edit is cheaper now than building on top of it and cheaper than routing
+  around it. Findings elsewhere in the tree stay in the baseline, untouched —
+  they are not this build's scope.
+- Run `ponytail-debt` for shortcuts already owed. A `ponytail:` marker in code
+  you are about to touch names a ceiling someone already hit; read it before
+  you design against it.
 - Trace the entry point through the layers that own the invariants. A plan that
   does not know which layer owns what will produce a patch in the wrong place.
 
